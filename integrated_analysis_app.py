@@ -5,6 +5,10 @@ import openai
 import datetime
 import argparse
 
+from generate_insight import generate_insight
+from read_git_logs import read_git_logs
+from generate_html_report import generate_html_report
+
 # Configure your OpenAI API key here
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
@@ -23,14 +27,6 @@ def analyze_git_logs_for_insights(logs):
     )
     return response.choices[0].message.content
 
-def read_git_logs(repo_path):
-    repo = git.Repo(repo_path)
-    commits = []
-    for commit in repo.iter_commits():
-        commit_info = f'Commit: {commit.hexsha}\nAuthor: {commit.author.name}\nDate: {commit.authored_datetime}\nMessage: {commit.message}\n' + '-' * 40
-        commits.append(commit_info)
-    return '\n'.join(commits)
-
 def run_code_analysis(directory):
     # well this works fantastic for python apps LOL but not for .NET apps or other languages ooops
     result = subprocess.run(['flake8', directory], capture_output=True, text=True)
@@ -39,17 +35,6 @@ def run_code_analysis(directory):
     else:
         return "No issues found."
 
-def generate_insight(commit_logs, analysis_report):
-    prompt = f"Let's delve into the insights gleaned from our recent developments. Below, you'll find a concise summary of the pivotal changes captured in our Git commit logs, alongside a comprehensive analysis of our code's current state. These findings not only reflect our progress but also spotlight areas ripe for improvement. Please review: Git Commit Logs: {commit_logs} Code Analysis Report: {analysis_report} Your expertise and feedback are invaluable as we refine our approach and forge ahead. Outline what each commiter has commited to the project."
-    # prompt = f"Summarize the following Git commit logs and code analysis report:\n\n{commit_logs}\n\n{analysis_report}"
-    response = openai.chat.completions.create(
-        model="gpt-4-0125-preview",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": prompt}
-        ]
-    )
-    return response.choices[0].message.content
 
 def main(repository_path, repo_directory, report_directory, base_name=None):
     
@@ -83,80 +68,6 @@ def main(repository_path, repo_directory, report_directory, base_name=None):
     filename = f"{report_directory}//{base_name}_analysis_report_{current_date}.html"
     save_html_report(html_report, filename)
     print("\nHTML report generated successfully.")
-
-def generate_html_report(commit_logs, analysis_report, ai_insights, base_name):
-    # Enhanced HTML template with updated styling
-    html_template = """
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Git Analysis Report {base_name}</title>
-    <style>
-        body {{
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-            color: #333;
-        }}
-        .container {{
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }}
-        .section {{
-            margin-bottom: 40px;
-        }}
-        .section-title {{
-            font-size: 28px;
-            color: #007BFF;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #007BFF;
-            padding-bottom: 6px;
-        }}
-        .content {{
-            font-size: 16px;
-            line-height: 1.6;
-            margin-top: 10px;
-        }}
-        /* Responsive typography */
-        @media (max-width: 600px) {{
-            .section-title {{
-                font-size: 24px;
-            }}
-            .content {{
-                font-size: 14px;
-            }}
-        }}
-    </style>
-    </head>
-    <body>
-    <div class="container">
-        <div class="section">
-            <div class="section-title">Git Log Summary</div>
-            <div class="content">{git_logs}</div>
-        </div>
-        <div class="section">
-            <div class="section-title">AI Analysis Insights</div>
-            <div class="content">{ai_insights}</div>
-        </div>
-        <!-- Additional sections as needed -->
-    </div>
-    </body>
-    </html>
-    """
-    
-    # Insert actual content into the HTML template
-    html_content = html_template.format(
-                                        base_name=base_name if base_name is not None else "",
-                                        git_logs=commit_logs.replace('\n', '<br>'),
-                                        ai_insights=ai_insights.replace('\n', '<br>'))
-    return html_content
 
 def save_html_report(html_content, file_name):
     # Save the HTML content to a file
