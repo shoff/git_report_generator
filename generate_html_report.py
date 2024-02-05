@@ -71,3 +71,54 @@ def generate_html_report(commit_logs, analysis_report, ai_insights, base_name):
                                         git_logs=commit_logs.replace('\n', '<br>'),
                                         ai_insights=ai_insights.replace('\n', '<br>'))
     return html_content
+
+def generate_html_contribution_report(contributions, output_path="contribution_report.html"):
+    # HTML row template for each contributor's data
+    row_template = "<tr><td>{author}</td><td>{commits}</td><td>{lines_added}</td><td>{lines_removed}</td></tr>"
+    
+    # Generate HTML rows from the contribution data
+    contribution_rows = [
+        row_template.format(author=author, **data)
+        for author, data in contributions.items()
+    ]
+    contribution_rows_html = "\n            ".join(contribution_rows)
+    
+    # Complete HTML template with a placeholder for the contribution rows
+    html_template = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Git Contribution Report</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; margin: 20px; }}
+        table {{ border-collapse: collapse; width: 100%; }}
+        th, td {{ text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }}
+        th {{ background-color: #f2f2f2; }}
+    </style>
+</head>
+<body>
+    <h2>Git Contribution Report</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Author</th>
+                <th>Commits</th>
+                <th>Lines Added</th>
+                <th>Lines Removed</th>
+            </tr>
+        </thead>
+        <tbody>
+            {contribution_rows}
+        </tbody>
+    </table>
+</body>
+</html>"""
+    
+    # Insert the generated rows into the HTML template
+    report_html = html_template.format(contribution_rows=contribution_rows_html)
+    
+    # Write the HTML content to the specified file
+    with open(output_path, 'w') as file:
+        file.write(report_html)
+    
+    print(f"Report generated: {output_path}")

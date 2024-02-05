@@ -6,8 +6,8 @@ import datetime
 import argparse
 
 from generate_insight import generate_insight
-from read_git_logs import read_git_logs
-from generate_html_report import generate_html_report
+from read_git_logs import read_git_logs, analyze_contributions
+from generate_html_report import generate_html_report, generate_html_contribution_report
 
 # Configure your OpenAI API key here
 openai.api_key = os.environ.get("OPENAI_API_KEY")
@@ -68,6 +68,9 @@ def main(repository_path, repo_directory, report_directory, base_name=None):
     filename = f"{report_directory}//{base_name}_analysis_report_{current_date}.html"
     save_html_report(html_report, filename)
     print("\nHTML report generated successfully.")
+    
+    contributions = analyze_contributions(repo_path)
+    generate_html_contribution_report(contributions)
 
 def save_html_report(html_content, file_name):
     # Save the HTML content to a file

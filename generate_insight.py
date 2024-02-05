@@ -14,3 +14,4 @@ def generate_insight(commit_logs, analysis_report):
         ]
     )
     return response.choices[0].message.content
+

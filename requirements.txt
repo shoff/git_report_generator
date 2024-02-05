@@ -1,3 +1,4 @@
 GitPython
 flake8
 openai
+textblob
