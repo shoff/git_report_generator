@@ -27,7 +27,20 @@ To run the application, execute the `main.py` script:
 ```
 python main.py
 ```
-Adjust the script or use command-line arguments (if implemented) to specify the Git repository or log files to analyze.
+The script can be customized using command-line arguments to specify the Git repository, the directory to analyze, the directory to store the report, and the base solution directory.
+
+Here is an example of how to use command-line arguments:
+```
+Here is an example of how to use command-line arguments:
+```
+
+Replace `<repository_path>` with the path of the Git repository you want to analyze.
+Replace `<repo_directory>` with the directory you want to analyze.
+Replace `<report_directory>` with the directory where you want to store the report.
+Replace `<base_name>` with the base solution directory.
+
+If you don't provide these arguments, the script will use the current working directory `(os.getcwd())` as the default value for `repository_path`, `repo_directory`, and `base_name`, and it will store the reports in a "`reports`" subdirectory in the current working directory for `report_directory`.
+
 
 ## Files Description
 - `generate_html_report.py`: Generates HTML reports from data.

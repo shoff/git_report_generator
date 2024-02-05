@@ -35,7 +35,6 @@ def run_code_analysis(directory):
     else:
         return "No issues found."
 
-
 def main(repository_path, repo_directory, report_directory, base_name=None):
     
     # Configure your repository path and code directory
