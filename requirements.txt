@@ -2,3 +2,4 @@ GitPython
 flake8
 openai
 textblob
+annoy
